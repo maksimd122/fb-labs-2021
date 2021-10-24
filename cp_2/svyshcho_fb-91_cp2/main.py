@@ -1,3 +1,5 @@
+import pandas
+
 alphabet = [chr(code) for code in range(ord("а"), ord("а") + 32)]
 common_letters = ['о', "е", "а", "и"]
 
@@ -83,23 +85,27 @@ def get_key(block: str):
 
 # /////////////////////////////////////////////////////////////////////////////////////////
 
-text = sort(text)
-plain_ind = corr_ind(text)
-print(f"Index of plain text = {plain_ind}")
-for key in keys:
-    ciphertexts[key] = cipher(text, key)
-    blocks = blocking(ciphertexts[key], len(key))
-    summ = 0
-    for block in blocks:
-        summ += corr_ind(block)
-    summ = summ / len(key)
-    print(F'Index = {summ}')
+# text = sort(text)
+# plain_ind = corr_ind(text)
+# indexes = {"Відкритий текст": plain_ind}
+# for key in keys:
+#     ciphertexts[key] = cipher(text, key)
+#     blocks = blocking(ciphertexts[key], len(key))
+#     summ = 0
+#     for block in blocks:
+#         summ += corr_ind(block)
+#     summ = summ / len(key)
+#     indexes[len(key)] = summ
+# results = pandas.DataFrame(
+#     {"Довжина ключа": [key for key in indexes], "Індекс": [indexes[key] for key in indexes]})
+# results.to_excel("index.xlsx", index=False)
 
 # /////////////////////////////////////////////////////////////////////////////////////////
 with open("ciphertext.txt", 'r', encoding='utf8') as data_file:
     ciphertext = data_file.read()
 
 keys_lengths = []
+dec_indexes = {}
 
 for i in range(2, 31):
     key = ['', '', '', '']
@@ -111,8 +117,10 @@ for i in range(2, 31):
         for j in range(4):
             key[j] += letters[j]
     summ = summ / i
-    if 0.050 < summ < 0.060:
-        print(f"Keys for {i} - {key}")
-        print(summ, i)
-
+    print(f"Keys for {i} - {key}")
+    # dec_indexes[i] = summ
+    # results = pandas.DataFrame(
+    #     {"Довжина ключа": [key for key in dec_indexes], "Індекс": [dec_indexes[key] for key in dec_indexes]})
+    # results.to_excel("dec_index.xlsx", index=False)
+#
 print(decipher(ciphertext, "человеквфутляре"))
