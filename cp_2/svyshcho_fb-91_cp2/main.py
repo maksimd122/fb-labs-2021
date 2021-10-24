@@ -1,7 +1,3 @@
-import pandas
-import openpyxl
-from math import log2
-
 alphabet = [chr(code) for code in range(ord("а"), ord("а") + 32)]
 common_letters = ['о', "е", "а", "и"]
 
@@ -88,16 +84,16 @@ def get_key(block: str):
 # /////////////////////////////////////////////////////////////////////////////////////////
 
 text = sort(text)
-# plain_ind = corr_ind(text)
-# print(f"Index of plain text = {plain_ind}")
-# for key in keys:
-#     ciphertexts[key] = cipher(text, key)
-#     blocks = blocking(ciphertexts[key], len(key))
-#     summ = 0
-#     for block in blocks:
-#         summ += corr_ind(block)
-#     summ = summ / len(key)
-#     print(F'Index = {summ}')
+plain_ind = corr_ind(text)
+print(f"Index of plain text = {plain_ind}")
+for key in keys:
+    ciphertexts[key] = cipher(text, key)
+    blocks = blocking(ciphertexts[key], len(key))
+    summ = 0
+    for block in blocks:
+        summ += corr_ind(block)
+    summ = summ / len(key)
+    print(F'Index = {summ}')
 
 # /////////////////////////////////////////////////////////////////////////////////////////
 with open("ciphertext.txt", 'r', encoding='utf8') as data_file:
