@@ -118,29 +118,42 @@ def Verify(plain_text, sign, open_key):
         return False
 
 
-def ReceiveKey(open_key):
-    print("Key received")
-    return open_key
+def ReceiveKey(ciphertext, cipher_sign, private_key, open_key_first, open_key_second):
+    plain_text = Decrypt(ciphertext, open_key_first, private_key)
+    sign = Decrypt(cipher_sign, open_key_first, private_key)
+    verified = Verify(plain_text, sign, open_key_second)
+    print("Message was received")
+    return plain_text, verified
 
 
-def SendKey(open_key, user):
-    print(f"Key was sent to {user}")
-    return ReceiveKey(open_key)
+def SendKey(plain_text, private_key, open_key_first, open_key_second):
+    ciphertext = Encrypt(plain_text, open_key_first)
+    sign = Sign(plain_text, private_key, open_key_second)
+    cipher_sign = Encrypt(sign, open_key_first)
+    print("Message was generated")
+    return ciphertext, cipher_sign
 
 
 second_pair = GenerateKeyPair()
+print("Second pair was generated")
 first_pair = GenerateKeyPair()
 while first_pair[0][1] * first_pair[0][2] > second_pair[0][1] * second_pair[0][2]:
     first_pair = GenerateKeyPair()
-known_key = SendKey(second_pair[1], "A")
-message = randint(1, known_key[0] - 1)
-ciphertext = Encrypt(message, known_key)
-sign = Sign(message, first_pair[0], first_pair[1])
-cipher_sign = Encrypt(sign, known_key)
-print("Message sent to B")
-plain_text = Decrypt(ciphertext, second_pair[1], second_pair[0])
-print(plain_text)
-plain_sign = Decrypt(cipher_sign, second_pair[1], second_pair[0])
-check_sign = Verify(plain_text, plain_sign, first_pair[1])
-if check_sign:
-    print("Verified")
+print("First pair was generated")
+
+plain_text = randint(1, 2 ** 255)
+print("\n", plain_text)
+
+k, s = SendKey(plain_text, first_pair[0], second_pair[1], first_pair[1])
+mess, ver = ReceiveKey(k, s, second_pair[0], second_pair[1], first_pair[1])
+if ver:
+    print(mess, "Verified from A to B")
+
+k, s = SendKey(plain_text, second_pair[0], first_pair[1], second_pair[1])
+mess, ver = ReceiveKey(k, s, first_pair[0], first_pair[1], second_pair[1])
+if ver:
+    print(mess, "Verified from B to A")
+# print(first_pair[1])
+# n = 31112285075822532646729297530475648802686015336023437238550519326095914087104717002934043460402427959576991463143012659235950011608951046128966210431217121571
+# e = 65537
+# print(SendKey(plain_text, first_pair[0], (n, e), first_pair[1]))
